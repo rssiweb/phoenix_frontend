@@ -1,9 +1,11 @@
 @import '~vue-material/dist/theme/engine';
 
 @include md-register-theme('default', (
-    primary:#3fffbe,
-    accent: #1a11e8,
-    theme: dark
+    primary:#2e86de,
+    accent: #feca57,
+    theme: light
 ));
 
 @import "~vue-material/dist/theme/all";
+@import '~vue-material/dist/vue-material.min.css';
+

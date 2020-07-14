@@ -6,11 +6,18 @@
 </template>
 
 <script>
-import FooterComponent from '@/components/Footer'
+import FooterComponent from "@/components/Footer";
 export default {
-  name: 'baselayout',
+  name: "baselayout",
   components: {
     FooterComponent
   }
-}
+};
 </script>
+
+<style lang="scss">
+body,
+html {
+  background: $bg-light;
+}
+</style>

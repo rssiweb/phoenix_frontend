@@ -1,0 +1,96 @@
+@import "~vue-material/dist/theme/variables";
+
+$bg-dark: #222f3e;
+$bg-light: #f8f9fa;
+$text-light: #eeeeee;
+$text-dark: #3c4043;
+$text-less-dark: #5f6368;
+$text-disabled: #8395a7;
+$text-link: #174ea6;
+
+// text color classes
+.text-light {
+    color: $text-light !important;
+}
+.text-dark {
+    color: $text-dark !important;
+    .md-subheading,
+    .md-subhead {
+        color: $text-less-dark;
+    }
+}
+
+// text align classes
+.text-center {
+    text-align: center;
+}
+.text-right {
+    text-align: right;
+}
+.text-left {
+    text-align: left;
+}
+a {
+    text-decoration: none !important;
+    font-weight: bold;
+    :hover,
+    :visited {
+        text-decoration: none;
+    }
+}
+
+// generate spacing classes m-(1-5), m(tbxyrl)-(1-5), p-(1-5), p(tbxyrl)-(1-5)
+$spaces: 5;
+$multipler: 8;
+@mixin sa-n {
+    @for $i from 1 through $spaces {
+        .m-#{$i} {
+            margin: #{$i * $multipler}px !important;
+        }
+        .mt-#{$i} {
+            margin-top: #{$i * $multipler}px !important;
+        }
+        .mb-#{$i} {
+            margin-bottom: #{$i * $multipler}px !important;
+        }
+        .mr-#{$i} {
+            margin-right: #{$i * $multipler}px !important;
+        }
+        .ml-#{$i} {
+            margin-left: #{$i * $multipler}px !important;
+        }
+        .mx-#{$i} {
+            margin-right: #{$i * $multipler}px !important;
+            margin-left: #{$i * $multipler}px !important;
+        }
+        .my-#{$i} {
+            margin-top: #{$i * $multipler}px !important;
+            margin-bottom: #{$i * $multipler}px !important;
+        }
+        .p-#{$i} {
+            padding: #{$i * $multipler}px !important;
+        }
+        .pt-#{$i} {
+            padding-top: #{$i * $multipler}px !important;
+        }
+        .pb-#{$i} {
+            padding-bottom: #{$i * $multipler}px !important;
+        }
+        .pr-#{$i} {
+            padding-right: #{$i * $multipler}px !important;
+        }
+        .pl-#{$i} {
+            padding-left: #{$i * $multipler}px !important;
+        }
+        .px-#{$i} {
+            padding-right: #{$i * $multipler}px !important;
+            padding-left: #{$i * $multipler}px !important;
+        }
+        .py-#{$i} {
+            padding-top: #{$i * $multipler}px !important;
+            padding-bottom: #{$i * $multipler}px !important;
+        }
+    }
+}
+
+@include sa-n;
