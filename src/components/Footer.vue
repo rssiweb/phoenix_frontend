@@ -1,20 +1,15 @@
 <template>
-  <footer class="footer">
-    By accessing this website and any pages thereof, you agree to be bound by the
-    <a
-      class="link"
-      href="https://rssi.in/disclaimer"
-    >Terms Of Use</a>
-  </footer>
+  <v-footer padless fixed class="blue-grey darken-4 grey--text text--lighten-5 pa-5">
+    <v-spacer></v-spacer>
+    <div>
+      <small>
+        By accessing this website and any pages thereof, you agree to be bound by the
+        <a
+          class="link"
+          href="https://rssi.in/disclaimer"
+        >Terms Of Use</a>
+        &copy; {{ new Date().getFullYear() }}
+      </small>
+    </div>
+  </v-footer>
 </template>
-<style lang="scss">
-.footer {
-  margin: 48px 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  .link {
-    margin-left: 2px;
-  }
-}
-</style>

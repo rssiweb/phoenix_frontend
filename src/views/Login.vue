@@ -1,70 +1,96 @@
 <template>
   <base-layout>
-    <div>
-      <md-card class="md-primary">
-        <md-card-header>
-          <md-card-header-text class="text-center my-5 py-5">
-            <div class="md-display-1 text-light">School Management System</div>
-            <div class="md-subhead mt-1">Manage your school from one place</div>
-          </md-card-header-text>
-        </md-card-header>
-      </md-card>
-      <div class="md-layout md-gutter md-alignment-center-center">
-        <div class="md-layout-item md-size-30 md-medium-size-50">
-          <form class="mt-5" @submit.prevent="login" novalidate>
-            <md-card class="md-layout-item">
-              <md-card-header class="text-dark">
-                <md-card-media>
-                  <img src="../assets/logo.png" height="40px" />
-                </md-card-media>
-
-                <div class="md-title text-center">Sign in</div>
-                <div class="md-subheading text-center mt-1">to continue to Phoenix</div>
-              </md-card-header>
-              <md-card-content>
-                <md-field :class="getValidationClass('email')">
-                  <label for="email">Email Address</label>
-                  <md-input
+    <v-container fluid class="pt-0">
+      <v-row>
+        <v-container fluid class="primary pa-16 text-center grey--text text--lighten-4">
+          <h1>Phoenix</h1>
+          <p>School Management System</p>
+        </v-container>
+      </v-row>
+      <v-row>
+        <v-col></v-col>
+        <v-col>
+          <v-card>
+            <v-card-title class="justify-center">
+              <div class="text-center">
+                <img src="../assets/icon.svg" />
+                <h4>Sign in</h4>
+                <small>to continue to Phoenix</small>
+              </div>
+            </v-card-title>
+            <v-card-text>
+              <v-form
+                novalidate
+                ref="login_form"
+                v-model="form.is_valid"
+                lazy-validation
+                @submit.prevent="login"
+              >
+                <v-container>
+                  <v-text-field
                     type="email"
-                    name="email"
-                    id="email"
+                    label="Email Address"
                     v-model="form.email"
-                    autocomplete="email"
+                    :rules="form.rules.email"
+                    :error-messages="form.error.email"
                     :disabled="sending"
-                  />
-                  <div class="md-error" v-if="!$v.form.email.required">The Email is required</div>
-                </md-field>
-                <md-field :class="getValidationClass('password')">
-                  <label for="password">Password</label>
-                  <md-input
+                    required
+                  ></v-text-field>
+                  <v-text-field
                     type="password"
-                    name="password"
-                    id="password"
+                    label="Password"
                     v-model="form.password"
-                    autocomplete="password"
+                    :rules="form.rules.password"
+                    :error-messages="form.error.password"
                     :disabled="sending"
-                  />
-                  <div class="md-error" v-if="!$v.form.password.required">The Password is required</div>
-                </md-field>
-              </md-card-content>
+                    required
+                  ></v-text-field>
+                </v-container>
+                <v-container class="text-center">
+                  <div
+                    class="error--text"
+                    v-for="(error, index) in form.error.non_field_errors"
+                    :key="index"
+                  >{{error}}</div>
+                </v-container>
+                <v-container class="text-center">
+                  <v-btn type="submit" color="primary" :disabled="sending">Login</v-btn>
+                  <p class="mt-2">
+                    Forgot your password ?
+                    <a
+                      @click.prevent="show_reset_dialog = true"
+                    >Reset Password</a>
+                  </p>
+                </v-container>
+              </v-form>
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col></v-col>
+      </v-row>
+    </v-container>
+    <v-dialog v-model="show_reset_dialog" max-width="290">
+      <v-card>
+        <v-card-title class="headline">Reset Password</v-card-title>
 
-              <md-progress-bar class="md-accent" md-mode="indeterminate" v-if="sending" />
+        <v-card-text>Please contact admin to reset your password</v-card-text>
 
-              <md-card-actions>
-                <md-button type="submit" class="md-primary" :disabled="sending">Log in</md-button>
-              </md-card-actions>
-            </md-card>
-          </form>
-        </div>
-      </div>
-    </div>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="show_reset_dialog = false">Close</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </base-layout>
 </template>
 
 <script>
 import BaseLayout from "@/layouts/Base";
+import { TokenService } from "@/services/auth";
 import { validationMixin } from "vuelidate";
-import { required } from "vuelidate/lib/validators";
+
+const token_service = new TokenService();
+
 export default {
   name: "login-page",
   mixins: [validationMixin],
@@ -73,33 +99,50 @@ export default {
   },
   data() {
     return {
+      show_reset_dialog: false,
       sending: false,
       form: {
+        is_valid: true,
         email: "",
-        password: ""
+        password: "",
+        rules: {
+          password: [v => !!v || "Password is required"],
+          email: [
+            v => !!v || "Email is required",
+            v => v.length >= 3 || "Email must be more than 3 characters"
+          ]
+        },
+        error: {
+          email: [],
+          password: [],
+          non_field_errors: []
+        }
       }
     };
   },
-  validations: {
-    form: {
-      email: { required },
-      password: { required }
-    }
-  },
   methods: {
-    getValidationClass(fieldName) {
-      const field = this.$v.form[fieldName];
-
-      if (field) {
-        return {
-          "md-invalid": field.$invalid && field.$dirty
-        };
-      }
+    clean_errors() {
+      this.form.error = {
+        email: [],
+        password: [],
+        non_field_errors: []
+      };
     },
     login() {
-      this.$v.$touch();
-      if (!this.$v.$invalid) {
+      this.clean_errors();
+      if (this.$refs.login_form.validate()) {
         this.sending = true;
+        token_service
+          .get_token(this.form.email, this.form.password)
+          .then(res => {
+            console.log(res);
+            this.sending = false;
+          })
+          .catch(error => {
+            console.log(Object.keys(error.response), error.response.data);
+            this.form.error = error.response.data;
+            this.sending = false;
+          });
       }
     }
   }

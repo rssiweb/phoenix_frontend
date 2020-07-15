@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <v-app>
     <slot></slot>
     <footer-component></footer-component>
-  </div>
+  </v-app>
 </template>
 
 <script>
@@ -14,10 +14,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss">
-body,
-html {
-  background: $bg-light;
-}
-</style>
