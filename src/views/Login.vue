@@ -55,6 +55,12 @@
                 </v-container>
                 <v-container class="text-center">
                   <v-btn type="submit" color="primary" :disabled="sending">Login</v-btn>
+                  <v-btn
+                    class="ml-2"
+                    @click.prevent="logout"
+                    color="error"
+                    :disabled="sending"
+                  >Logout</v-btn>
                   <p class="mt-2">
                     Forgot your password ?
                     <a
@@ -86,14 +92,10 @@
 
 <script>
 import BaseLayout from "@/layouts/Base";
-import { TokenService } from "@/services/auth";
-import { validationMixin } from "vuelidate";
-
-const token_service = new TokenService();
+import { AUTH_REQUEST } from "../store/actions/auth";
 
 export default {
   name: "login-page",
-  mixins: [validationMixin],
   components: {
     BaseLayout
   },
@@ -132,14 +134,16 @@ export default {
       this.clean_errors();
       if (this.$refs.login_form.validate()) {
         this.sending = true;
-        token_service
-          .get_token(this.form.email, this.form.password)
-          .then(res => {
-            console.log(res);
+        this.$store
+          .dispatch(AUTH_REQUEST, {
+            email: this.form.email,
+            password: this.form.password
+          })
+          .then(() => {
+            this.$router.push({ name: "home" });
             this.sending = false;
           })
           .catch(error => {
-            console.log(Object.keys(error.response), error.response.data);
             this.form.error = error.response.data;
             this.sending = false;
           });

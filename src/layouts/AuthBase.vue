@@ -1,5 +1,6 @@
 <template>
   <v-app>
+    <main-menu></main-menu>
     <v-main>
       <slot></slot>
     </v-main>
@@ -9,10 +10,12 @@
 
 <script>
 import FooterComponent from "@/components/Footer";
+import MainMenu from "@/components/MainMenu";
 export default {
-  name: "baselayout",
+  name: "authbaselayout",
   components: {
-    FooterComponent
+    FooterComponent,
+    MainMenu
   }
 };
 </script>

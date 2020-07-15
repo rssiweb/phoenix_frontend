@@ -1,9 +1,9 @@
 import { maxios } from './base.js'
 
 
-class TokenService {
-    get_token(email, password) {
-        return maxios.post('/api/auth/', { username: email, password: password })
+class UserService {
+    get_profile(id) {
+        return maxios.get(`/api/faculty/${id}`)
             .then(response => {
                 return Promise.resolve(response)
             })
@@ -13,4 +13,4 @@ class TokenService {
     }
 }
 
-export default new TokenService()
+export default new UserService()
