@@ -8,7 +8,7 @@ import { USER_REQUEST } from "../actions/user";
 import token_service from "../../services/auth";
 import { maxios } from '../../services/base'
 const state = {
-    token: localStorage.getItem("user-token") || "",
+    token: localStorage.getItem("token") || "",
     status: "",
     hasLoadedOnce: false
 };
@@ -24,10 +24,7 @@ const actions = {
             commit(AUTH_REQUEST);
             token_service.get_token(data.email, data.password)
                 .then(resp => {
-                    console.log(resp.data, "here", resp.data.token)
                     localStorage.setItem("token", resp.data.token);
-                    // Here set the header of your ajax library to the token value.
-                    // example with axios
                     maxios.defaults.headers.common['Authorization'] = `Token ${resp.data.token}`
                     commit(AUTH_SUCCESS, resp.data.token);
                     dispatch(USER_REQUEST, resp.data.user_id);

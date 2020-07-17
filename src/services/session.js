@@ -1,11 +1,11 @@
 import { maxios } from './base.js'
 
 
-class StudentsService {
-    get_students() {
-        return maxios.get(`/api/students/`)
+class SessionService {
+    all() {
+        return maxios.get(`/api/session/`)
             .then(response => {
-                return Promise.resolve(response)
+                return Promise.resolve(response.data)
             })
             .catch(error => {
                 return Promise.reject(error);
@@ -13,4 +13,4 @@ class StudentsService {
     }
 }
 
-export default new StudentsService()
+export default new SessionService()

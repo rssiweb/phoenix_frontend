@@ -1,9 +1,9 @@
 import { USER_REQUEST, USER_ERROR, USER_SUCCESS } from "../actions/user";
-import user_service from "../../services/user";
+import faculty_service from "../../services/faculty";
 import Vue from "vue";
 import { AUTH_LOGOUT } from "../actions/auth";
 
-const state = { status: "", profile: JSON.parse(localStorage.getItem("profile")) || {}, };
+const state = { status: "", profile: JSON.parse(localStorage.getItem("profile") || "{}") };
 
 const getters = {
     getProfile: state => state.profile,
@@ -13,9 +13,10 @@ const getters = {
 const actions = {
     [USER_REQUEST]: ({ commit, dispatch }, id) => {
         commit(USER_REQUEST);
-        user_service.get_profile(id)
-            .then(resp => {
-                commit(USER_SUCCESS, resp.data);
+        faculty_service.get_profile(id)
+            .then(profile => {
+
+                commit(USER_SUCCESS, profile);
             })
             .catch(() => {
                 commit(USER_ERROR);
@@ -31,8 +32,8 @@ const mutations = {
     },
     [USER_SUCCESS]: (state, profile) => {
         state.status = "success";
-        Vue.set(state, "profile", profile);
         localStorage.setItem("profile", JSON.stringify(profile));
+        Vue.set(state, "profile", profile);
     },
     [USER_ERROR]: state => {
         state.status = "error";

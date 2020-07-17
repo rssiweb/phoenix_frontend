@@ -55,12 +55,6 @@
                 </v-container>
                 <v-container class="text-center">
                   <v-btn type="submit" color="primary" :disabled="sending">Login</v-btn>
-                  <v-btn
-                    class="ml-2"
-                    @click.prevent="logout"
-                    color="error"
-                    :disabled="sending"
-                  >Logout</v-btn>
                   <p class="mt-2">
                     Forgot your password ?
                     <a
