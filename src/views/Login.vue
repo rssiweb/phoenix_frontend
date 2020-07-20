@@ -138,7 +138,12 @@ export default {
             this.sending = false;
           })
           .catch(error => {
-            this.form.error = error.response.data;
+            if (error.response && error.response.data)
+              this.form.error = error.response.data;
+            else
+              this.form.error.non_field_errors = [
+                "Network error occured, please try again!"
+              ];
             this.sending = false;
           });
       }

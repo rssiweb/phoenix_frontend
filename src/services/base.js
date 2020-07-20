@@ -7,6 +7,6 @@ if (token) {
 }
 
 export const maxios = axios.create({
-    baseURL: '//localhost:8000/',
+    baseURL: '//192.168.1.139:8000/',
     headers: headers
 })
