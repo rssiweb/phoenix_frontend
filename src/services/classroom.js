@@ -56,8 +56,17 @@ class ClassroomService {
                 return Promise.reject(error);
             })
     }
-    set_student_attendance(data) {
+    add_student_attendance(data) {
         return maxios.post('/api/student-attendance/', data)
+            .then(response => {
+                return Promise.resolve(response.data)
+            })
+            .catch(error => {
+                return Promise.reject(error);
+            })
+    }
+    update_student_attendance(attendance_id, data) {
+        return maxios.put(`/api/student-attendance/${attendance_id}/`, data)
             .then(response => {
                 return Promise.resolve(response.data)
             })

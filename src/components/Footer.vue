@@ -1,5 +1,5 @@
 <template>
-  <v-footer padless fixed class="blue-grey darken-4 grey--text text--lighten-5 pa-5">
+  <v-footer absolute class="blue-grey darken-4 grey--text text--lighten-5 pa-5">
     <v-spacer></v-spacer>
     <div>
       <small>

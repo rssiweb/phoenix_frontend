@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-main>
+    <v-main class="pb-16">
       <slot></slot>
     </v-main>
     <footer-component></footer-component>
