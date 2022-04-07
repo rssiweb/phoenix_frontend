@@ -1,9 +1,9 @@
-import { maxios } from './base.js'
+import { backend } from './base.js'
 
 
 class TokenService {
     get_token(email, password) {
-        return maxios.post('/api/auth/', { username: email, password: password })
+        return backend.post('/api/auth/', { username: email, password: password })
             .then(response => {
                 return Promise.resolve(response)
             })

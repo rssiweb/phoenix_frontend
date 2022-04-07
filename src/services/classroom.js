@@ -1,9 +1,9 @@
-import { maxios } from './base.js'
+import { backend } from '.'
 
 
 class ClassroomService {
     all(params) {
-        return maxios.get('/api/classroom', { params: params })
+        return backend.get('/api/classroom', { params: params })
             .then(response => {
                 return Promise.resolve(response.data)
             })
@@ -12,7 +12,7 @@ class ClassroomService {
             })
     }
     students(params) {
-        return maxios.get('/api/classroom-students/', { params: params })
+        return backend.get('/api/classroom-students/', { params: params })
             .then(response => {
                 return Promise.resolve(response.data)
             })
@@ -21,7 +21,7 @@ class ClassroomService {
             })
     }
     attendance(params) {
-        return maxios.get('/api/classroom/', { params: params })
+        return backend.get('/api/classroom/', { params: params })
             .then(response => {
                 return Promise.resolve(response.data)
             })
@@ -30,7 +30,7 @@ class ClassroomService {
             })
     }
     start_class(data) {
-        return maxios.post('/api/class-attendance/', data)
+        return backend.post('/api/class-attendance/', data)
             .then(response => {
                 return Promise.resolve(response.data)
             })
@@ -39,7 +39,7 @@ class ClassroomService {
             })
     }
     end_class(classroom_id, data) {
-        return maxios.patch(`/api/class-attendance/${classroom_id}/`, data)
+        return backend.patch(`/api/class-attendance/${classroom_id}/`, data)
             .then(response => {
                 return Promise.resolve(response.data)
             })
@@ -48,7 +48,7 @@ class ClassroomService {
             })
     }
     get_attendance(params) {
-        return maxios.get('/api/class-attendance/', { params: params })
+        return backend.get('/api/class-attendance/', { params: params })
             .then(response => {
                 return Promise.resolve(response.data)
             })
@@ -57,7 +57,7 @@ class ClassroomService {
             })
     }
     add_student_attendance(data) {
-        return maxios.post('/api/student-attendance/', data)
+        return backend.post('/api/student-attendance/', data)
             .then(response => {
                 return Promise.resolve(response.data)
             })
@@ -66,7 +66,7 @@ class ClassroomService {
             })
     }
     update_student_attendance(attendance_id, data) {
-        return maxios.put(`/api/student-attendance/${attendance_id}/`, data)
+        return backend.put(`/api/student-attendance/${attendance_id}/`, data)
             .then(response => {
                 return Promise.resolve(response.data)
             })
@@ -75,7 +75,7 @@ class ClassroomService {
             })
     }
     delete_student_attendance(std_attendance_id) {
-        return maxios.delete(`/api/student-attendance/${std_attendance_id}/`)
+        return backend.delete(`/api/student-attendance/${std_attendance_id}/`)
             .then(response => {
                 return Promise.resolve(response.data)
             })
@@ -84,7 +84,7 @@ class ClassroomService {
             })
     }
     get_student_attendance(params) {
-        return maxios.get('/api/student-attendance/', { params: params })
+        return backend.get('/api/student-attendance/', { params: params })
             .then(response => {
                 return Promise.resolve(response.data)
             })

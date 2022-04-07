@@ -1,9 +1,9 @@
-import { maxios } from './base.js'
+import { backend } from '.'
 
 
 class SessionService {
     all() {
-        return maxios.get(`/api/session/`)
+        return backend.get(`/api/session/`)
             .then(response => {
                 return Promise.resolve(response.data)
             })

@@ -1,9 +1,9 @@
-import { maxios } from './base.js'
+import { backend } from './base.js'
 
 
 class StudentService {
     all() {
-        return maxios.get(`/api/student/`)
+        return backend.get(`/api/student/`)
             .then(response => {
                 return Promise.resolve(response.data)
             })

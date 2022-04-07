@@ -1,7 +1,6 @@
-import { USER_REQUEST, USER_ERROR, USER_SUCCESS } from "../actions/user";
+import { AUTH_LOGOUT, REQUEST_, SUCCESS_, ERROR_ } from "@/store/actions";
 import faculty_service from "../../services/faculty";
 import Vue from "vue";
-import { AUTH_LOGOUT } from "../actions/auth";
 
 const state = { status: "", profile: JSON.parse(localStorage.getItem("profile") || "{}") };
 
@@ -11,15 +10,15 @@ const getters = {
 };
 
 const actions = {
-    [USER_REQUEST]: ({ commit, dispatch }, id) => {
-        commit(USER_REQUEST);
+    [REQUEST_]: ({ commit, dispatch }, id) => {
+        commit(REQUEST_);
         faculty_service.get_profile(id)
             .then(profile => {
 
-                commit(USER_SUCCESS, profile);
+                commit(SUCCESS_, profile);
             })
             .catch(() => {
-                commit(USER_ERROR);
+                commit(ERROR_);
                 // if resp is unauthorized, logout, to
                 dispatch(AUTH_LOGOUT);
             });
@@ -27,15 +26,15 @@ const actions = {
 };
 
 const mutations = {
-    [USER_REQUEST]: state => {
+    [REQUEST_]: state => {
         state.status = "loading";
     },
-    [USER_SUCCESS]: (state, profile) => {
+    [SUCCESS_]: (state, profile) => {
         state.status = "success";
         localStorage.setItem("profile", JSON.stringify(profile));
         Vue.set(state, "profile", profile);
     },
-    [USER_ERROR]: state => {
+    [ERROR_]: state => {
         state.status = "error";
     },
     [AUTH_LOGOUT]: state => {
@@ -45,6 +44,7 @@ const mutations = {
 };
 
 export default {
+    namespaced: true,
     state,
     getters,
     actions,

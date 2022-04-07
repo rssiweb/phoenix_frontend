@@ -1,9 +1,9 @@
-import { maxios } from './base.js'
+import { backend } from './base.js'
 
 
 class BranchService {
     all() {
-        return maxios.get('/api/branch')
+        return backend.get('/api/branch')
             .then(response => {
                 return Promise.resolve(response.data)
             })
@@ -12,7 +12,7 @@ class BranchService {
             })
     }
     one(branch_id) {
-        return maxios.get(`/api/branch/${branch_id}`)
+        return backend.get(`/api/branch/${branch_id}`)
             .then(response => {
                 return Promise.resolve(response.data)
             })

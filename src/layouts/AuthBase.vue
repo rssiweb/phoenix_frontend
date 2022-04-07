@@ -9,10 +9,10 @@
 </template>
 
 <script>
-import FooterComponent from "@/components/Footer";
+import FooterComponent from "@/components/FooterComponent";
 import MainMenu from "@/components/MainMenu";
 export default {
-  name: "authbaselayout",
+  name: "auth-base",
   components: {
     FooterComponent,
     MainMenu

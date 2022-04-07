@@ -1,9 +1,9 @@
-import { maxios } from './base.js'
+import { backend } from '.'
 
 
 class UserService {
     get_profile(id) {
-        return maxios.get(`/api/faculty/${id}`)
+        return backend.get(`/api/faculty/${id}`)
             .then(response => {
                 return Promise.resolve(response.data)
             })

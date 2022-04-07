@@ -14,9 +14,9 @@
 </template>
 
 <script>
-import { AUTH_LOGOUT } from "../store/actions/auth";
+import { AUTH_LOGOUT } from "@/store/actions";
 export default {
-  name: "mainmenu",
+  name: "main-menu",
   data() {
     return {};
   },

@@ -8,9 +8,9 @@
 </template>
 
 <script>
-import FooterComponent from "@/components/Footer";
+import FooterComponent from "@/components/FooterComponent";
 export default {
-  name: "baselayout",
+  name: "base-layout",
   components: {
     FooterComponent
   }

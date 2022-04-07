@@ -33,7 +33,7 @@
                     v-model="form.email"
                     :rules="form.rules.email"
                     :error-messages="form.error.email"
-                    :disabled="sending"
+                    :disabled="loading"
                     required
                   ></v-text-field>
                   <v-text-field
@@ -42,7 +42,7 @@
                     v-model="form.password"
                     :rules="form.rules.password"
                     :error-messages="form.error.password"
-                    :disabled="sending"
+                    :disabled="loading"
                     required
                   ></v-text-field>
                 </v-container>
@@ -54,7 +54,7 @@
                   >{{error}}</div>
                 </v-container>
                 <v-container class="text-center">
-                  <v-btn type="submit" color="primary" :disabled="sending">Login</v-btn>
+                  <v-btn type="submit" color="primary" :disabled="loading">Login</v-btn>
                   <p class="mt-2">
                     Forgot your password ?
                     <a
@@ -85,8 +85,8 @@
 </template>
 
 <script>
-import BaseLayout from "@/layouts/Base";
-import { AUTH_REQUEST } from "../store/actions/auth";
+import BaseLayout from "@/layouts/BaseLayout";
+import { AUTH_REQUEST } from "@/store/actions";
 
 export default {
   name: "login-page",
@@ -96,7 +96,7 @@ export default {
   data() {
     return {
       show_reset_dialog: false,
-      sending: false,
+      loading: false,
       form: {
         is_valid: true,
         email: "",
@@ -116,35 +116,44 @@ export default {
       }
     };
   },
+  created(){
+    if (this.isAuthenticated){
+      this.after_login();
+    }
+  },
   methods: {
-    clean_errors() {
+    clear_form_errors() {
       this.form.error = {
         email: [],
         password: [],
         non_field_errors: []
       };
     },
+    after_login(){
+      this.$router.push({ name: "home" });
+    },
     login() {
-      this.clean_errors();
+      this.clear_form_errors();
       if (this.$refs.login_form.validate()) {
-        this.sending = true;
+        this.loading = true;
         this.$store
           .dispatch(AUTH_REQUEST, {
             email: this.form.email,
             password: this.form.password
           })
           .then(() => {
-            this.$router.push({ name: "home" });
-            this.sending = false;
+            this.after_login();
+            this.loading = false;
           })
           .catch(error => {
+            console.log(error)
             if (error.response && error.response.data)
               this.form.error = error.response.data;
             else
               this.form.error.non_field_errors = [
                 "Network error occured, please try again!"
               ];
-            this.sending = false;
+            this.loading = false;
           });
       }
     }

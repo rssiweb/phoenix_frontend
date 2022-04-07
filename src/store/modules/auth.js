@@ -1,12 +1,11 @@
 import {
-    AUTH_REQUEST,
-    AUTH_ERROR,
-    AUTH_SUCCESS,
-    AUTH_LOGOUT
-} from "../actions/auth";
-import { USER_REQUEST } from "../actions/user";
-import token_service from "../../services/auth";
-import { maxios } from '../../services/base'
+    USER_REQUEST,
+    REQUEST_,
+    SUCCESS_,
+    ERROR_,
+    LOGOUT_
+} from "@/store/actions";
+import { backend, token_service } from '@/services'
 const state = {
     token: localStorage.getItem("token") || "",
     status: "",
@@ -19,28 +18,28 @@ const getters = {
 };
 
 const actions = {
-    [AUTH_REQUEST]: ({ commit, dispatch }, data) => {
+    [REQUEST_]: ({ commit, dispatch }, data) => {
         return new Promise((resolve, reject) => {
-            commit(AUTH_REQUEST);
-            token_service.get_token(data.email, data.password)
+            commit(REQUEST_);
+            token_service.post({username: data.email, password: data.password})
                 .then(resp => {
-                    localStorage.setItem("token", resp.data.token);
-                    maxios.defaults.headers.common['Authorization'] = `Token ${resp.data.token}`
-                    commit(AUTH_SUCCESS, resp.data.token);
-                    dispatch(USER_REQUEST, resp.data.user_id);
+                    localStorage.setItem("token", resp.token);
+                    backend.defaults.headers.common['Authorization'] = `Token ${resp.token}`
+                    commit(SUCCESS_, resp.token);
+                    dispatch(USER_REQUEST, resp.user_id);
                     resolve(resp);
                 })
                 .catch(err => {
-                    commit(AUTH_ERROR, err);
+                    commit(ERROR_, err);
                     localStorage.removeItem("token");
                     reject(err);
                 });
         });
     },
-    [AUTH_LOGOUT]: ({ commit }) => {
+    [LOGOUT_]: ({ commit }) => {
         return new Promise(resolve => {
-            commit(AUTH_LOGOUT);
-            delete maxios.defaults.headers.common['Authorization']
+            commit(LOGOUT_);
+            delete backend.defaults.headers.common['Authorization']
             localStorage.removeItem("token");
             resolve();
         });
@@ -48,24 +47,25 @@ const actions = {
 };
 
 const mutations = {
-    [AUTH_REQUEST]: state => {
+    [REQUEST_]: state => {
         state.status = "loading";
     },
-    [AUTH_SUCCESS]: (state, token) => {
+    [SUCCESS_]: (state, token) => {
         state.status = "success";
         state.token = token;
         state.hasLoadedOnce = true;
     },
-    [AUTH_ERROR]: state => {
+    [ERROR_]: state => {
         state.status = "error";
         state.hasLoadedOnce = true;
     },
-    [AUTH_LOGOUT]: state => {
+    [LOGOUT_]: state => {
         state.token = "";
     }
 };
 
 export default {
+    namespaced: true,
     state,
     getters,
     actions,
