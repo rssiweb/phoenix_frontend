@@ -88,7 +88,10 @@ class BaseService {
 // App backend
 export const token_service = new BaseService("/auth/")
 export const branch_service = new BaseService("/branch")
-// export const token_service = new BaseService("/api/auth/")
+export const faculty_service = new BaseService("/user/")
+export const session_service = new BaseService("/session/")
+export const classroom_service = new BaseService("/class/")
+
 // export const token_service = new BaseService("/api/auth/")
 // export const token_service = new BaseService("/api/auth/")
 

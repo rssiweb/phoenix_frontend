@@ -17,11 +17,13 @@ Vue.mixin({
         }
     },
     computed: {
-        ...mapState("profile", {
-            my_profile: (state) => state.profile
+        ...mapState("user", {
+            me: (state) => state.user
         }),
         ...mapGetters("auth", [
-            "isAuthenticated"
+            "isAuthenticated",
+            "authUsername",
+            "authId",
         ]),
     },
     methods: {

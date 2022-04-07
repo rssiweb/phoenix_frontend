@@ -1,73 +1,82 @@
 import {
-    USER_REQUEST,
-    REQUEST_,
-    SUCCESS_,
-    ERROR_,
-    LOGOUT_
+  REQUEST_,
+  SUCCESS_,
+  ERROR_,
+  LOGOUT_,
 } from "@/store/actions";
-import { backend, token_service } from '@/services'
+import { backend, token_service } from "@/services";
 const state = {
-    token: localStorage.getItem("token") || "",
-    status: "",
-    hasLoadedOnce: false
+  token: localStorage.getItem("token") || "",
+  loading: false,
+  success: null,
+  username: localStorage.getItem("username") || "",
+  id: localStorage.getItem("id") || "",
 };
 
 const getters = {
-    isAuthenticated: state => !!state.token,
-    authStatus: state => state.status
+  isAuthenticated: (state) => !!state.token,
+  status: (state) => state.status,
+  loading: (state) => state.loading,
+  authUsername: (state) => state.username,
+  authId: (state) => state.id
 };
 
 const actions = {
-    [REQUEST_]: ({ commit, dispatch }, data) => {
-        return new Promise((resolve, reject) => {
-            commit(REQUEST_);
-            token_service.post({username: data.email, password: data.password})
-                .then(resp => {
-                    localStorage.setItem("token", resp.token);
-                    backend.defaults.headers.common['Authorization'] = `Token ${resp.token}`
-                    commit(SUCCESS_, resp.token);
-                    dispatch(USER_REQUEST, resp.user_id);
-                    resolve(resp);
-                })
-                .catch(err => {
-                    commit(ERROR_, err);
-                    localStorage.removeItem("token");
-                    reject(err);
-                });
+  [REQUEST_]: ({ commit }, data) => {
+    return new Promise((resolve, reject) => {
+      commit(REQUEST_);
+      token_service
+        .post({ username: data.email, password: data.password })
+        .then((res) => {
+          commit(SUCCESS_, res);
+          backend.defaults.headers.common[
+            "Authorization"
+          ] = `Token ${res.token}`;
+          resolve(res);
+        })
+        .catch((err) => {
+          commit(ERROR_, err);
+          reject(err);
         });
-    },
-    [LOGOUT_]: ({ commit }) => {
-        return new Promise(resolve => {
-            commit(LOGOUT_);
-            delete backend.defaults.headers.common['Authorization']
-            localStorage.removeItem("token");
-            resolve();
-        });
-    }
+    });
+  },
+  [LOGOUT_]: ({ commit }) => {
+    return new Promise((resolve) => {
+      commit(LOGOUT_);
+      delete backend.defaults.headers.common["Authorization"];
+      localStorage.removeItem("token");
+      resolve();
+    });
+  },
 };
 
 const mutations = {
-    [REQUEST_]: state => {
-        state.status = "loading";
-    },
-    [SUCCESS_]: (state, token) => {
-        state.status = "success";
-        state.token = token;
-        state.hasLoadedOnce = true;
-    },
-    [ERROR_]: state => {
-        state.status = "error";
-        state.hasLoadedOnce = true;
-    },
-    [LOGOUT_]: state => {
-        state.token = "";
-    }
+  [REQUEST_]: (state) => {
+    state.loading = true;
+  },
+  [SUCCESS_]: (state, res) => {
+    localStorage.setItem("id", res.id);
+    localStorage.setItem("token", res.token);
+    localStorage.setItem("username", res.username);
+    state.token = res.token;
+    state.username = res.username;
+    state.id = res.id;
+    state.loading = false;
+    state.success = true;
+  },
+  [ERROR_]: (state) => {
+    state.loading = false;
+    state.success = false;
+  },
+  [LOGOUT_]: (state) => {
+    state.token = "";
+  },
 };
 
 export default {
-    namespaced: true,
-    state,
-    getters,
-    actions,
-    mutations
+  namespaced: true,
+  state,
+  getters,
+  actions,
+  mutations,
 };

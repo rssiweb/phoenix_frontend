@@ -86,7 +86,7 @@
 
 <script>
 import BaseLayout from "@/layouts/BaseLayout";
-import { AUTH_REQUEST } from "@/store/actions";
+import { AUTH_REQUEST, USER_REQUEST } from "@/store/actions";
 
 export default {
   name: "login-page",
@@ -130,6 +130,7 @@ export default {
       };
     },
     after_login(){
+      this.$store.dispatch(USER_REQUEST, this.authUsername);
       this.$router.push({ name: "home" });
     },
     login() {
