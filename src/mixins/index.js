@@ -2,7 +2,7 @@ import Vue from 'vue'
 // import decode_error_message from "@/extras/error"
 import { mapGetters, mapState } from "vuex";
 import moment from "moment";
-
+import constants from "@/constants";
 Vue.mixin({
     components: {
         // EmptyState,
@@ -10,6 +10,7 @@ Vue.mixin({
     data() {
         return {
             // global data
+            constants: constants,
             google_api_key: '',
             website_title: "Phoenix",
             media_base: process.env.VUE_APP_MEDIA_BASE || '',

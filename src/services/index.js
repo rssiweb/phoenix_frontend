@@ -91,6 +91,8 @@ export const branch_service = new BaseService("/branch")
 export const faculty_service = new BaseService("/user/")
 export const session_service = new BaseService("/session/")
 export const classroom_service = new BaseService("/class/")
+export const classoccurrence_service = new BaseService("/class-occurrence/")
+export const attendance_service = new BaseService("/attendance/")
 
 // export const token_service = new BaseService("/api/auth/")
 // export const token_service = new BaseService("/api/auth/")

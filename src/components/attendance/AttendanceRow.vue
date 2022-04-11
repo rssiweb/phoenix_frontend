@@ -71,7 +71,8 @@ const ClassState = Object.freeze({
   ENDED: 2,
 });
 export default {
-  name: "attendance-page",
+  props: ["class"],
+  name: "attendance-row",
   components: {
     AuthBaseLayout,
   },
