@@ -50,11 +50,20 @@
             <div class="text-h5">Select a class</div>
           </template>
           <template v-else>
-            <attendance-table-monthly
-              :date="selected_date"
-              :clazz="selected_class"
-              :occurrence="selected_occurrence"
-            />
+            <div class="d-none d-md-block">
+              <attendance-table-monthly
+                :date="selected_date"
+                :clazz="selected_class"
+                :occurrence="selected_occurrence"
+              />
+            </div>
+            <div class="d-md-none">
+              <attendance-table-daily
+                :date="selected_date"
+                :clazz="selected_class"
+                :occurrence="selected_occurrence"
+              />
+            </div>
           </template>
         </v-col>
       </v-row>
@@ -87,6 +96,7 @@ import AuthBaseLayout from "@/layouts/AuthBase";
 import moment from "moment";
 import AttendanceClassSelector from "../components/attendance/AttendanceClassSelector.vue";
 import AttendanceTableMonthly from "../components/attendance/AttendanceTableMonthly.vue";
+import AttendanceTableDaily from "../components/attendance/AttendanceTableDaily.vue";
 import { CLASSOCCURRENCE_REQUEST } from "@/store/actions";
 import { mapGetters } from "vuex";
 export default {
@@ -95,6 +105,7 @@ export default {
     AuthBaseLayout,
     AttendanceClassSelector,
     AttendanceTableMonthly,
+    AttendanceTableDaily,
   },
   data() {
     return {

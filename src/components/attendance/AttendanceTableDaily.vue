@@ -56,7 +56,7 @@ export default {
     occurrence: Object,
   },
   components: { AttendanceRow },
-  name: "attendance-table-monthly",
+  name: "attendance-table-daily",
   data() {
     return {
       loading: false,
