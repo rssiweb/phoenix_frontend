@@ -18,3 +18,7 @@ export const AUTH_LOGOUT = `auth/${LOGOUT_}`;
 export const USER_REQUEST = `user/${REQUEST_}`;
 export const USER_SUCCESS = `user/${SUCCESS_}`;
 export const USER_ERROR = `user/${ERROR_}`;
+
+// classoccurrence
+export const CLASSOCCURRENCE_REQUEST = `classoccurrence/${REQUEST_}`;
+export const CLASSOCCURRENCE_CREATE = `classoccurrence/${CREATE_}`;

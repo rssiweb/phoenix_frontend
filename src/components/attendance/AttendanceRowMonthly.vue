@@ -1,8 +1,8 @@
 <template>
   <tr>
-    <td>{{ record.id }}</td>
+    <td>{{ studentId }}</td>
     <td>
-      {{ record.name }}
+      {{ studentName }}
     </td>
 
     <template v-for="header in headers">
@@ -21,7 +21,7 @@
             <v-icon
               :disabled="updating"
               :color="colors[state.value][attendance == state.value]"
-              @click="update_attendance(state.value)"
+              @click="trigger_attendance(state.value)"
             >
               {{ state.icon }}
               fa-check-circle
@@ -35,12 +35,16 @@
 
 <script>
 import moment from "moment";
-import { attendance_service, classoccurrence_service } from "@/services";
+import { attendance_service } from "@/services";
+import Vue from "vue";
+import { CLASSOCCURRENCE_CREATE } from "@/store/actions";
 export default {
   name: "attendance-row-monthly",
   props: {
+    studentId: String,
+    studentName: String,
     states: Array,
-    record: Object,
+    initAttendances: Array,
     headers: Array,
     date: String,
     clazz: Object,
@@ -48,35 +52,29 @@ export default {
   },
   data() {
     return {
+      // record: Vue.util.extend({}, this.initRecord),
+      attendances: this.initAttendances || [],
       updating: false,
       attendance: "",
       attendance_id: null,
-      data: {},
     };
   },
   created() {
-    this.record.attendance.forEach((record) => {
-      var date = moment(record.date);
-      var dateIndex = date.date();
-      var attendance = this.data[dateIndex] || [];
-      attendance.push(record.attendance);
-      this.$set(this.data, dateIndex, attendance);
-    });
+    this.identify_attendance_today();
   },
   watch: {
     date() {
-      this.recalculate_attendance_today();
+      this.identify_attendance_today();
     },
     occurrence() {
-      this.recalculate_attendance_today();
-    },
-    clazz() {
-      if (this.class) this.get_class_occurrence();
+      this.identify_attendance_today();
     },
   },
   methods: {
-    recalculate_attendance_today() {
-      this.record.attendance.forEach((record) => {
+    identify_attendance_today() {
+      this.attendance = null;
+      this.attendance_id = null;
+      this.attendances.forEach((record) => {
         var record_date = moment(record.date);
         if (
           this.occurrence &&
@@ -97,27 +95,16 @@ export default {
       else color = color + "lighten-4";
       return color;
     },
-    get_class_occurrence() {
-      classoccurrence_service
-        .get({
-          classroom: this.clazz.id,
-          start_time_after: moment(this.date).toDate(),
-          start_time_after_before: moment(this.date).add(1, "days").toDate(),
-        })
-        .then()
-        .catch();
-    },
-    update_attendance(attendance) {
+    register_attendance(attendance) {
       this.updating = true;
       this.attendance = attendance;
-      var args = [
-        {
-          faculty: this.authUsername,
-          student: this.record.id,
-          attendance: attendance,
-          class_occurrance: this.occurrence.id,
-        },
-      ];
+      var payload = {
+        faculty: this.me.username,
+        student: this.studentId,
+        attendance: attendance,
+        class_occurrance: this.occurrence.id,
+      };
+      var args = [payload];
       var method = "post";
       if (this.attendance_id) {
         method = "patch";
@@ -125,18 +112,63 @@ export default {
       }
 
       attendance_service[method](...args)
-        .then((resp) => {
-          this.attendance_id = resp.id;
-          this.attendance = resp.attendance;
+        .then((res) => {
+          this.attendance_id = res.id;
+          this.attendance = res.attendance;
           this.updating = false;
+          if (method == "post") this.attendances.push(res);
+          // we probably have to sort this after insert
+          //  or maybe this will always be empty
+          else Vue.util.extend(this.attendances[this.occurrence_order], res);
         })
         .catch((error) => {
           this.updating = false;
           console.log(error);
         });
     },
+    trigger_attendance(attendance) {
+      if (!this.occurrence) {
+        var vm = this;
+        this.$store
+          .dispatch(CLASSOCCURRENCE_CREATE, {
+            classroom: this.clazz.id,
+            faculty: this.me.username,
+            start_time: moment(this.date).format(),
+          })
+          .then(() => {
+            console.log(this.occurrence, "afterwords");
+            vm.register_attendance(attendance);
+          });
+      } else {
+        this.register_attendance(attendance);
+      }
+    },
   },
   computed: {
+    data() {
+      var tmp = {};
+      this.attendances.forEach((record) => {
+        var date = moment(record.date);
+        var dateIndex = date.date();
+        var attendance = tmp[dateIndex] || [];
+        attendance.push(record.attendance);
+        this.$set(tmp, dateIndex, attendance);
+      });
+      return tmp;
+    },
+    occurrence_order() {
+      var order = 0;
+      this.attendances.forEach((record, index) => {
+        var record_date = moment(record.date);
+        if (
+          this.occurrence &&
+          moment(this.occurrence.start_time).isSame(record_date)
+        ) {
+          order = index;
+        }
+      });
+      return order;
+    },
     colors() {
       var obj = {};
       this.states.forEach((state) => {

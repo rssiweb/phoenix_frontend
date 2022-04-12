@@ -2,7 +2,10 @@
   <base-layout>
     <v-container fluid class="pt-0">
       <v-row>
-        <v-container fluid class="primary pa-16 text-center grey--text text--lighten-4">
+        <v-container
+          fluid
+          class="primary pa-16 text-center grey--text text--lighten-4"
+        >
           <h1>Phoenix</h1>
           <p>School Management System</p>
         </v-container>
@@ -51,15 +54,19 @@
                     class="error--text"
                     v-for="(error, index) in form.error.non_field_errors"
                     :key="index"
-                  >{{error}}</div>
+                  >
+                    {{ error }}
+                  </div>
                 </v-container>
                 <v-container class="text-center">
-                  <v-btn type="submit" color="primary" :disabled="loading">Login</v-btn>
+                  <v-btn type="submit" color="primary" :disabled="loading"
+                    >Login</v-btn
+                  >
                   <p class="mt-2">
                     Forgot your password ?
-                    <a
-                      @click.prevent="show_reset_dialog = true"
-                    >Reset Password</a>
+                    <a @click.prevent="show_reset_dialog = true"
+                      >Reset Password</a
+                    >
                   </p>
                 </v-container>
               </v-form>
@@ -77,7 +84,9 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="show_reset_dialog = false">Close</v-btn>
+          <v-btn color="primary" text @click="show_reset_dialog = false"
+            >Close</v-btn
+          >
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -91,7 +100,7 @@ import { AUTH_REQUEST, USER_REQUEST } from "@/store/actions";
 export default {
   name: "login-page",
   components: {
-    BaseLayout
+    BaseLayout,
   },
   data() {
     return {
@@ -102,22 +111,22 @@ export default {
         email: "",
         password: "",
         rules: {
-          password: [v => !!v || "Password is required"],
+          password: [(v) => !!v || "Password is required"],
           email: [
-            v => !!v || "Email is required",
-            v => v.length >= 3 || "Email must be more than 3 characters"
-          ]
+            (v) => !!v || "Email is required",
+            (v) => v.length >= 3 || "Email must be more than 3 characters",
+          ],
         },
         error: {
           email: [],
           password: [],
-          non_field_errors: []
-        }
-      }
+          non_field_errors: [],
+        },
+      },
     };
   },
-  created(){
-    if (this.isAuthenticated){
+  created() {
+    if (this.isAuthenticated) {
       this.after_login();
     }
   },
@@ -126,12 +135,19 @@ export default {
       this.form.error = {
         email: [],
         password: [],
-        non_field_errors: []
+        non_field_errors: [],
       };
     },
-    after_login(){
-      this.$store.dispatch(USER_REQUEST, this.authUsername);
-      this.$router.push({ name: "home" });
+    after_login() {
+      var vm = this;
+      this.$store
+        .dispatch(USER_REQUEST, this.authUsername)
+        .then(() => {
+          vm.$router.push({ name: "home" });
+        })
+        .catch(() => {
+          // show error loading user profile
+        });
     },
     login() {
       this.clear_form_errors();
@@ -140,24 +156,24 @@ export default {
         this.$store
           .dispatch(AUTH_REQUEST, {
             email: this.form.email,
-            password: this.form.password
+            password: this.form.password,
           })
           .then(() => {
             this.after_login();
             this.loading = false;
           })
-          .catch(error => {
-            console.log(error)
+          .catch((error) => {
+            console.log(error);
             if (error.response && error.response.data)
               this.form.error = error.response.data;
             else
               this.form.error.non_field_errors = [
-                "Network error occured, please try again!"
+                "Network error occured, please try again!",
               ];
             this.loading = false;
           });
       }
-    }
-  }
+    },
+  },
 };
 </script>

@@ -1,9 +1,4 @@
-import {
-  REQUEST_,
-  SUCCESS_,
-  ERROR_,
-  LOGOUT_,
-} from "@/store/actions";
+import { REQUEST_, SUCCESS_, ERROR_, LOGOUT_ } from "@/store/actions";
 import { backend, token_service } from "@/services";
 const state = {
   token: localStorage.getItem("token") || "",
@@ -18,7 +13,7 @@ const getters = {
   status: (state) => state.status,
   loading: (state) => state.loading,
   authUsername: (state) => state.username,
-  authId: (state) => state.id
+  authId: (state) => state.id,
 };
 
 const actions = {

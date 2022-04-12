@@ -10,6 +10,7 @@
         <v-row v-if="class_occurrences.length > 1">
           <v-spacer> </v-spacer>
           <!-- actions -->
+          <!-- TODO: copy from another day attendance, case where extra class is just after the current class -->
           <div class="text-right">
             <span class="text-caption"
               >Multiple classes occurred on this date - current selection
@@ -83,11 +84,11 @@
 
 <script>
 import AuthBaseLayout from "@/layouts/AuthBase";
-import { classoccurrence_service } from "@/services";
 import moment from "moment";
 import AttendanceClassSelector from "../components/attendance/AttendanceClassSelector.vue";
 import AttendanceTableMonthly from "../components/attendance/AttendanceTableMonthly.vue";
-
+import { CLASSOCCURRENCE_REQUEST } from "@/store/actions";
+import { mapGetters } from "vuex";
 export default {
   name: "attendance-page",
   components: {
@@ -101,10 +102,7 @@ export default {
         info: "",
         error: "",
       },
-
       selected_occurrence: null,
-      class_occurrences: [],
-
       loading: false,
       selected_date: "",
       selected_class: null,
@@ -125,8 +123,16 @@ export default {
         this.fetch_class_occurrence();
       }
     },
+    class_occurrences() {
+      if (this.class_occurrences.length == 1)
+        this.select_occurrence(this.class_occurrences[0]);
+    },
   },
   computed: {
+    ...mapGetters("classoccurrence", [
+      "class_occurrences",
+      "occurrence_loading",
+    ]),
     select_occurrence_dialog() {
       return this.class_occurrences.length > 1 && !this.selected_occurrence;
     },
@@ -140,27 +146,12 @@ export default {
     },
     fetch_class_occurrence() {
       if (!this.selected_class || !this.selected_date) return;
-      this.loading = true;
-      classoccurrence_service
-        .get({
-          classroom: this.selected_class.id,
-          faculty: this.me.id,
-          start_time_after: moment(this.selected_date).startOf("day").format(),
-          start_time_before: moment(this.selected_date).endOf("day").format(),
-        })
-        .then((res) => {
-          this.loading = false;
-          this.class_occurrences.splice(0, this.class_occurrences.length);
-          res.results.forEach((item) => {
-            this.class_occurrences.push(item);
-          });
-          if (this.class_occurrences.length == 1)
-            this.select_occurrence(this.class_occurrences[0]);
-        })
-        .catch((error) => {
-          console.log(error);
-          this.loading = false;
-        });
+      this.$store.dispatch(CLASSOCCURRENCE_REQUEST, {
+        classroom: this.selected_class.id,
+        faculty: this.me.username,
+        start_time_after: moment(this.selected_date).startOf("day").format(),
+        start_time_before: moment(this.selected_date).endOf("day").format(),
+      });
     },
   },
 };

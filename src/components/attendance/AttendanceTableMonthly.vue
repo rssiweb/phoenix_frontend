@@ -2,8 +2,8 @@
   <v-simple-table dense fixed-header class="text-xs">
     <thead>
       <tr rowspan="2">
-        <th>Student ID</th>
-        <th>Student Name</th>
+        <th class="text-center">Student ID</th>
+        <th class="text-center">Student Name</th>
         <!-- <th class="text-center" colspan="3">{{ today }}</th> -->
         <th
           class="text-center"
@@ -32,12 +32,14 @@
       <attendance-row-monthly
         :states="attendance_states"
         :headers="headers"
-        :record="record"
+        :init-attendances="record.attendance"
         v-for="record in records"
         :key="record.id"
         :date="date"
         :clazz="clazz"
         :occurrence="occurrence"
+        :student-id="record.id"
+        :student-name="record.name"
       />
     </tbody>
   </v-simple-table>
