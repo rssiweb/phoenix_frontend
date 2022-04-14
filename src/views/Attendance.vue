@@ -1,98 +1,91 @@
 <template>
-  <auth-base-layout>
-    <v-container :fluid="true">
-      <v-container>
-        <attendance-class-selector
-          v-on:select-class="selected_class = $event"
-          v-on:select-date="selected_date = $event"
-        />
+  <v-container :fluid="true">
+    <v-container>
+      <attendance-class-selector
+        v-on:select-class="selected_class = $event"
+        v-on:select-date="selected_date = $event"
+      />
 
-        <v-row v-if="class_occurrences.length > 1">
-          <v-spacer> </v-spacer>
-          <!-- actions -->
-          <!-- TODO: copy from another day attendance, case where extra class is just after the current class -->
-          <div class="text-right">
-            <span class="text-caption"
-              >Multiple classes occurred on this date - current selection
-              <span v-if="selected_occurrence">{{
-                format_time(selected_occurrence.start_time)
-              }}</span>
-              <span v-else>None</span>
-            </span>
-            <br />
-            <v-btn
-              small
-              dense
-              color="primary"
-              @click="selected_occurrence = null"
-              >select class</v-btn
-            >
-          </div>
-        </v-row>
-
-        <v-row class="mt-2">
-          <v-spacer></v-spacer>
-          <p class="error--text">
-            <v-icon small>mdi-error</v-icon>
-            {{ message.error }}
-          </p>
+      <v-row v-if="class_occurrences.length > 1">
+        <v-spacer> </v-spacer>
+        <!-- actions -->
+        <!-- TODO: copy from another day attendance, case where extra class is just after the current class -->
+        <div class="text-right">
+          <span class="text-caption"
+            >Multiple classes occurred on this date - current selection
+            <span v-if="selected_occurrence">{{
+              format_time(selected_occurrence.start_time)
+            }}</span>
+            <span v-else>None</span>
+          </span>
           <br />
-          <p class="info--text">
-            <v-icon small>mdi-info</v-icon>
-            {{ message.info }}
-          </p>
-          <v-spacer></v-spacer>
-        </v-row>
-      </v-container>
-      <v-row>
-        <v-col class="text-center">
-          <template v-if="!selected_class">
-            <div class="text-h5">Select a class</div>
-          </template>
-          <template v-else>
-            <div class="d-none d-md-block">
-              <attendance-table-monthly
-                :date="selected_date"
-                :clazz="selected_class"
-                :occurrence="selected_occurrence"
-              />
-            </div>
-            <div class="d-md-none">
-              <attendance-table-daily
-                :date="selected_date"
-                :clazz="selected_class"
-                :occurrence="selected_occurrence"
-              />
-            </div>
-          </template>
-        </v-col>
+          <v-btn small dense color="primary" @click="selected_occurrence = null"
+            >select class</v-btn
+          >
+        </div>
       </v-row>
-      <v-dialog v-model="select_occurrence_dialog" persistent max-width="290">
-        <v-card>
-          <v-card-title class="text-subtitle-1 text-center">
-            Select class time
-          </v-card-title>
-          <v-card-text class="text-center">
-            <v-btn
-              small
-              dense
-              color="primary"
-              v-for="occurrence in class_occurrences"
-              :key="occurrence.id"
-              class="mr-2"
-              @click="selected_occurrence = occurrence"
-            >
-              {{ format_time(occurrence.start_time) }}
-            </v-btn>
-          </v-card-text>
-        </v-card>
-      </v-dialog>
+
+      <v-row class="mt-2">
+        <v-spacer></v-spacer>
+        <p class="error--text">
+          <v-icon small>mdi-error</v-icon>
+          {{ message.error }}
+        </p>
+        <br />
+        <p class="info--text">
+          <v-icon small>mdi-info</v-icon>
+          {{ message.info }}
+        </p>
+        <v-spacer></v-spacer>
+      </v-row>
     </v-container>
-  </auth-base-layout>
+    <v-row>
+      <v-col class="text-center">
+        <template v-if="!selected_class">
+          <div class="text-h5">Select a class</div>
+        </template>
+        <template v-else>
+          <div class="d-none d-md-block">
+            <attendance-table-monthly
+              :date="selected_date"
+              :clazz="selected_class"
+              :occurrence="selected_occurrence"
+            />
+          </div>
+          <div class="d-md-none">
+            <attendance-table-daily
+              :date="selected_date"
+              :clazz="selected_class"
+              :occurrence="selected_occurrence"
+            />
+          </div>
+        </template>
+      </v-col>
+    </v-row>
+    <v-dialog v-model="select_occurrence_dialog" persistent max-width="290">
+      <v-card>
+        <v-card-title class="text-subtitle-1 text-center">
+          Select class time
+        </v-card-title>
+        <v-card-text class="text-center">
+          <v-btn
+            small
+            dense
+            color="primary"
+            v-for="occurrence in class_occurrences"
+            :key="occurrence.id"
+            class="mr-2"
+            @click="selected_occurrence = occurrence"
+          >
+            {{ format_time(occurrence.start_time) }}
+          </v-btn>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+  </v-container>
 </template>
 
 <script>
-import AuthBaseLayout from "@/layouts/AuthBase";
 import moment from "moment";
 import AttendanceClassSelector from "../components/attendance/AttendanceClassSelector.vue";
 import AttendanceTableMonthly from "../components/attendance/AttendanceTableMonthly.vue";
@@ -102,7 +95,6 @@ import { mapGetters } from "vuex";
 export default {
   name: "attendance-page",
   components: {
-    AuthBaseLayout,
     AttendanceClassSelector,
     AttendanceTableMonthly,
     AttendanceTableDaily,

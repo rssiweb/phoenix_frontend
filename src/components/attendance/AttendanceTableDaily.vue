@@ -1,5 +1,5 @@
 <template>
-  <v-simple-table dense fixed-header class="text-xs">
+  <v-simple-table dense fixed-header>
     <thead>
       <tr rowspan="2">
         <th class="text-center">Student ID</th>
@@ -25,7 +25,6 @@
         >
           {{ state.value }}
         </th>
-        <th colspan="100%"></th>
       </tr>
     </thead>
     <tbody v-if="records.length">
@@ -125,22 +124,18 @@ export default {
     sub_header_colspan() {
       //  name and id of students are 2 fixed columns
       var first_fixed_cols = 2;
-      if (!this.date) return first_fixed_cols;
-      var today = moment();
-      var first_of_this_month = moment(today.format("YYYY-MM-01"));
-      var attendance_day = moment(this.date);
-      var same_month = attendance_day.isSameOrAfter(first_of_this_month);
-      var end_date = today;
-      if (!same_month) {
-        var first_of_next_month = moment(
-          new Date(attendance_day.year(), attendance_day.month() + 1, 1)
-        );
-        end_date = first_of_next_month.subtract(1, "days");
-      }
-      return first_fixed_cols + end_date.diff(attendance_day, "days");
+
+      return first_fixed_cols;
     },
     headers() {
-      var headers = this.getDaysArray();
+      var currDate = moment(this.date);
+      var headers = [
+        {
+          date: currDate.date(),
+          day: this.constants.DAYS[currDate.day()],
+          colspan: this.attendance_states.length,
+        },
+      ];
       return headers;
     },
     today() {

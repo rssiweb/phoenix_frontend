@@ -1,6 +1,14 @@
 <template>
-  <router-view />
+  <base-layout>
+    <router-view />
+  </base-layout>
 </template>
 
-<style lang="scss">
-</style>
+<script>
+import BaseLayout from "@/layouts/BaseLayout";
+export default {
+  components: {
+    BaseLayout,
+  },
+};
+</script>

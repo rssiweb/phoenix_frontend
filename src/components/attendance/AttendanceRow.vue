@@ -35,9 +35,10 @@
 
 <script>
 import moment from "moment";
-import { attendance_service } from "@/services";
-import Vue from "vue";
-import { CLASSOCCURRENCE_CREATE } from "@/store/actions";
+// import { attendance_service } from "@/services";
+// import Vue from "vue";
+import { ATTENDANCE_REGISTER, CLASSOCCURRENCE_CREATE } from "@/store/actions";
+import { mapGetters } from "vuex";
 export default {
   name: "attendance-row",
   props: {
@@ -70,81 +71,9 @@ export default {
       this.identify_attendance_today();
     },
   },
-  methods: {
-    identify_attendance_today() {
-      this.attendance = null;
-      this.attendance_id = null;
-      this.attendances.forEach((record) => {
-        var record_date = moment(record.date);
-        if (
-          this.occurrence &&
-          moment(this.occurrence.start_time).isSame(record_date)
-        ) {
-          this.attendance = record.attendance;
-          this.attendance_id = record.id;
-        }
-      });
-    },
-    concat(values) {
-      if (!values) return "";
-      return values.join("");
-    },
-    get_color(state) {
-      var color = state.color;
-      if (this.attendance == state.value) color = color + "lighten-1";
-      else color = color + "lighten-4";
-      return color;
-    },
-    register_attendance(attendance) {
-      this.updating = true;
-      this.attendance = attendance;
-      var payload = {
-        faculty: this.me.username,
-        student: this.studentId,
-        attendance: attendance,
-        class_occurrance: this.occurrence.id,
-      };
-      var args = [payload];
-      var method = "post";
-      if (this.attendance_id) {
-        method = "patch";
-        args.push(this.attendance_id);
-      }
 
-      attendance_service[method](...args)
-        .then((res) => {
-          this.attendance_id = res.id;
-          this.attendance = res.attendance;
-          this.updating = false;
-          if (method == "post") this.attendances.push(res);
-          // we probably have to sort this after insert
-          //  or maybe this will always be empty
-          else Vue.util.extend(this.attendances[this.occurrence_order], res);
-        })
-        .catch((error) => {
-          this.updating = false;
-          console.log(error);
-        });
-    },
-    trigger_attendance(attendance) {
-      if (!this.occurrence) {
-        var vm = this;
-        this.$store
-          .dispatch(CLASSOCCURRENCE_CREATE, {
-            classroom: this.clazz.id,
-            faculty: this.me.username,
-            start_time: moment(this.date).format(),
-          })
-          .then(() => {
-            console.log(this.occurrence, "afterwords");
-            vm.register_attendance(attendance);
-          });
-      } else {
-        this.register_attendance(attendance);
-      }
-    },
-  },
   computed: {
+    ...mapGetters("attendance", { updating: "loading" }),
     data() {
       var tmp = {};
       this.attendances.forEach((record) => {
@@ -182,6 +111,93 @@ export default {
     },
     current_date() {
       return moment(this.date).date();
+    },
+  },
+  methods: {
+    identify_attendance_today() {
+      this.attendance = null;
+      this.attendance_id = null;
+      this.attendances.forEach((record) => {
+        var record_date = moment(record.date);
+        if (
+          this.occurrence &&
+          moment(this.occurrence.start_time).isSame(record_date)
+        ) {
+          this.attendance = record.attendance;
+          this.attendance_id = record.id;
+        }
+      });
+    },
+    concat(values) {
+      if (!values) return "";
+      return values.join("");
+    },
+    get_color(state) {
+      var color = state.color;
+      if (this.attendance == state.value) color = color + "lighten-1";
+      else color = color + "lighten-4";
+      return color;
+    },
+    register_attendance(attendance) {
+      this.$store
+        .dispatch(ATTENDANCE_REGISTER, {
+          faculty: this.me.username,
+          student: this.studentId,
+          attendance: attendance,
+          class_occurrance: this.occurrence.id,
+          attendance_id: this.attendance_id,
+        })
+        .then((res) => {
+          this.attendance_id = res.id;
+          this.attendance = res.attendance;
+        });
+
+      // this.updating = true;
+      // this.attendance = attendance;
+      // var payload = {
+      //   faculty: this.me.username,
+      //   student: this.studentId,
+      //   attendance: attendance,
+      //   class_occurrance: this.occurrence.id,
+      // };
+      // var args = [payload];
+      // var method = "post";
+      // if (this.attendance_id) {
+      //   method = "patch";
+      //   args.push(this.attendance_id);
+      // }
+
+      // attendance_service[method](...args)
+      //   .then((res) => {
+      //     this.attendance_id = res.id;
+      //     this.attendance = res.attendance;
+      //     this.updating = false;
+      //     if (method == "post") this.attendances.push(res);
+      //     // we probably have to sort this after insert
+      //     //  or maybe this will always be empty
+      //     else Vue.util.extend(this.attendances[this.occurrence_order], res);
+      //   })
+      //   .catch((error) => {
+      //     this.updating = false;
+      //     console.log(error);
+      //   });
+    },
+    trigger_attendance(attendance) {
+      if (!this.occurrence) {
+        var vm = this;
+        this.$store
+          .dispatch(CLASSOCCURRENCE_CREATE, {
+            classroom: this.clazz.id,
+            faculty: this.me.username,
+            start_time: moment(this.date).format(),
+          })
+          .then(() => {
+            console.log(this.occurrence, "afterwords");
+            vm.register_attendance(attendance);
+          });
+      } else {
+        this.register_attendance(attendance);
+      }
     },
   },
 };

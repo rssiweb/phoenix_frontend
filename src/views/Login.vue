@@ -1,81 +1,77 @@
 <template>
-  <base-layout>
-    <v-container fluid class="pt-0">
-      <v-row>
-        <v-container
-          fluid
-          class="primary pa-16 text-center grey--text text--lighten-4"
-        >
-          <h1>Phoenix</h1>
-          <p>School Management System</p>
-        </v-container>
-      </v-row>
-      <v-row>
-        <v-col></v-col>
-        <v-col>
-          <v-card>
-            <v-card-title class="justify-center">
-              <div class="text-center">
-                <img src="../assets/icon.svg" />
-                <h4>Sign in</h4>
-                <small>to continue to Phoenix</small>
-              </div>
-            </v-card-title>
-            <v-card-text>
-              <v-form
-                novalidate
-                ref="login_form"
-                v-model="form.is_valid"
-                lazy-validation
-                @submit.prevent="login"
-              >
-                <v-container>
-                  <v-text-field
-                    type="email"
-                    label="Email Address"
-                    v-model="form.email"
-                    :rules="form.rules.email"
-                    :error-messages="form.error.email"
-                    :disabled="loading"
-                    required
-                  ></v-text-field>
-                  <v-text-field
-                    type="password"
-                    label="Password"
-                    v-model="form.password"
-                    :rules="form.rules.password"
-                    :error-messages="form.error.password"
-                    :disabled="loading"
-                    required
-                  ></v-text-field>
-                </v-container>
-                <v-container class="text-center">
-                  <div
-                    class="error--text"
-                    v-for="(error, index) in form.error.non_field_errors"
-                    :key="index"
+  <v-container fluid class="pt-0">
+    <v-row>
+      <v-container
+        fluid
+        class="primary pa-16 text-center grey--text text--lighten-4"
+      >
+        <h1>Phoenix</h1>
+        <p>School Management System</p>
+      </v-container>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-card flat>
+          <v-card-title class="justify-center">
+            <div class="text-center">
+              <img src="../assets/icon.svg" />
+              <h4>Sign in</h4>
+              <small>to continue to Phoenix</small>
+            </div>
+          </v-card-title>
+          <v-card-text>
+            <v-form
+              novalidate
+              ref="login_form"
+              v-model="form.is_valid"
+              lazy-validation
+              @submit.prevent="login"
+            >
+              <v-container>
+                <v-text-field
+                  type="email"
+                  label="Email Address"
+                  v-model="form.email"
+                  :rules="form.rules.email"
+                  :error-messages="form.error.email"
+                  :disabled="loading"
+                  required
+                ></v-text-field>
+                <v-text-field
+                  type="password"
+                  label="Password"
+                  v-model="form.password"
+                  :rules="form.rules.password"
+                  :error-messages="form.error.password"
+                  :disabled="loading"
+                  required
+                ></v-text-field>
+              </v-container>
+              <v-container class="text-center">
+                <div
+                  class="error--text"
+                  v-for="(error, index) in form.error.non_field_errors"
+                  :key="index"
+                >
+                  {{ error }}
+                </div>
+              </v-container>
+              <v-container class="text-center">
+                <v-btn type="submit" color="primary" :disabled="loading"
+                  >Login</v-btn
+                >
+                <p class="mt-2">
+                  Forgot your password ?
+                  <a @click.prevent="show_reset_dialog = true"
+                    >Reset Password</a
                   >
-                    {{ error }}
-                  </div>
-                </v-container>
-                <v-container class="text-center">
-                  <v-btn type="submit" color="primary" :disabled="loading"
-                    >Login</v-btn
-                  >
-                  <p class="mt-2">
-                    Forgot your password ?
-                    <a @click.prevent="show_reset_dialog = true"
-                      >Reset Password</a
-                    >
-                  </p>
-                </v-container>
-              </v-form>
-            </v-card-text>
-          </v-card>
-        </v-col>
-        <v-col></v-col>
-      </v-row>
-    </v-container>
+                </p>
+              </v-container>
+            </v-form>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
     <v-dialog v-model="show_reset_dialog" max-width="290">
       <v-card>
         <v-card-title class="headline">Reset Password</v-card-title>
@@ -90,18 +86,14 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </base-layout>
+  </v-container>
 </template>
 
 <script>
-import BaseLayout from "@/layouts/BaseLayout";
 import { AUTH_REQUEST, USER_REQUEST } from "@/store/actions";
 
 export default {
   name: "login-page",
-  components: {
-    BaseLayout,
-  },
   data() {
     return {
       show_reset_dialog: false,

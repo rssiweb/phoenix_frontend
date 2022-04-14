@@ -1,4 +1,5 @@
-$body-font-family: 'Comfortaa', sans-serif !default;
+$body-font-family: 'Roboto', sans-serif !default;
+$heading-font-family: 'Comfortaa', sans-serif !default;
 $bg-dark: #222f3e;
 $bg-light: #f8f9fa;
 $text-light: #eeeeee;
@@ -7,3 +8,5 @@ $text-dark: #3c4043;
 $text-less-dark: #5f6368;
 $text-disabled: #8395a7;
 $text-link: #174ea6;
+
+@import '~vuetify/src/styles/settings/_variables.scss';

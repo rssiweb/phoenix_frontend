@@ -49,6 +49,8 @@
 import moment from "moment";
 import AttendanceRow from "./AttendanceRow.vue";
 import { classroom_service } from "@/services";
+import { ATTENDANCE_REQUEST } from "@/store/actions";
+import { mapGetters } from "vuex";
 export default {
   props: {
     date: String,
@@ -68,17 +70,51 @@ export default {
       records: [],
     };
   },
+  computed: {
+    ...mapGetters("attendance", {
+      records: "attendances",
+    }),
+    sub_header_colspan() {
+      //  name and id of students are 2 fixed columns
+      var first_fixed_cols = 2;
+      if (!this.date) return first_fixed_cols;
+      var today = moment();
+      var first_of_this_month = moment(today.format("YYYY-MM-01"));
+      var attendance_day = moment(this.date);
+      var same_month = attendance_day.isSameOrAfter(first_of_this_month);
+      var end_date = today;
+      if (!same_month) {
+        var first_of_next_month = moment(
+          new Date(attendance_day.year(), attendance_day.month() + 1, 1)
+        );
+        end_date = first_of_next_month.subtract(1, "days");
+      }
+      return first_fixed_cols + end_date.diff(attendance_day, "days");
+    },
+    headers() {
+      var headers = this.getDaysArray();
+      return headers;
+    },
+    today() {
+      var today = moment(this.date);
+      return today.date() + this.constants.DAYS[today.day()];
+    },
+  },
   created() {
     this.fetch_attendance_records();
   },
+
   watch: {
     clazz() {
       this.fetch_attendance_records();
     },
   },
+
   methods: {
     fetch_attendance_records() {
       if (!this.clazz.id) return;
+      this.$store.dispatch(ATTENDANCE_REQUEST, this.clazz.id);
+      
       this.loading = true;
       return classroom_service
         .get({}, `${this.clazz.id}/attendance_by_student`)
@@ -119,33 +155,6 @@ export default {
         date.setDate(date.getDate() + 1);
       }
       return result.reverse();
-    },
-  },
-  computed: {
-    sub_header_colspan() {
-      //  name and id of students are 2 fixed columns
-      var first_fixed_cols = 2;
-      if (!this.date) return first_fixed_cols;
-      var today = moment();
-      var first_of_this_month = moment(today.format("YYYY-MM-01"));
-      var attendance_day = moment(this.date);
-      var same_month = attendance_day.isSameOrAfter(first_of_this_month);
-      var end_date = today;
-      if (!same_month) {
-        var first_of_next_month = moment(
-          new Date(attendance_day.year(), attendance_day.month() + 1, 1)
-        );
-        end_date = first_of_next_month.subtract(1, "days");
-      }
-      return first_fixed_cols + end_date.diff(attendance_day, "days");
-    },
-    headers() {
-      var headers = this.getDaysArray();
-      return headers;
-    },
-    today() {
-      var today = moment(this.date);
-      return today.date() + this.constants.DAYS[today.day()];
     },
   },
 };
