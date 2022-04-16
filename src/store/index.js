@@ -5,6 +5,7 @@ import auth from "./modules/auth";
 import classoccurrence from "./modules/classoccurrence";
 import attendance from "./modules/attendance";
 import menu from "./modules/menu";
+import global from "./modules/global";
 Vue.use(Vuex);
 
 const debug = process.env.NODE_ENV !== "production";
@@ -16,6 +17,7 @@ export default new Vuex.Store({
     classoccurrence,
     attendance,
     menu,
+    global,
   },
   strict: debug,
 });

@@ -1,126 +1,44 @@
 <template>
-  <v-simple-table dense fixed-header>
-    <thead>
-      <tr rowspan="2">
-        <th class="text-center">Student ID</th>
-        <th class="text-center">Student Name</th>
-        <!-- <th class="text-center" colspan="3">{{ today }}</th> -->
-        <th
-          class="text-center"
-          v-for="header in headers"
-          :key="header.date"
-          :colspan="header.colspan"
-        >
-          {{ header.date }}
-          <br />
-          {{ header.day }}
-        </th>
-      </tr>
-      <tr>
-        <th :colspan="sub_header_colspan"></th>
-        <th
-          class="text-center"
-          v-for="state in attendance_states"
-          :key="state.value"
-        >
-          {{ state.value }}
-        </th>
-      </tr>
-    </thead>
-    <tbody v-if="records.length">
-      <attendance-row
-        :states="attendance_states"
-        :headers="headers"
-        :init-attendances="record.attendance"
-        v-for="record in records"
-        :key="record.id"
-        :date="date"
-        :clazz="clazz"
-        :occurrence="occurrence"
-        :student-id="record.id"
-        :student-name="record.name"
-      />
-    </tbody>
-  </v-simple-table>
+  <v-list>
+    <attendance-card
+      class="mb-1"
+      :states="attendanceStates"
+      :headers="headers"
+      :attendances="record.attendance"
+      v-for="record in records"
+      :key="clazz.id + '-' + record.id"
+      :date="date"
+      :clazz="clazz"
+      :occurrence="occurrence"
+      :student-id="record.id"
+      :student-name="record.name"
+    ></attendance-card>
+  </v-list>
 </template>
 
 <script>
 import moment from "moment";
-import AttendanceRow from "./AttendanceRow.vue";
-import { classroom_service } from "@/services";
+
+import AttendanceCard from "./AttendanceCard.vue";
+import { ATTENDANCE_REQUEST } from "@/store/actions";
+import { mapGetters } from "vuex";
 export default {
   props: {
     date: String,
     clazz: Object,
     occurrence: Object,
+    attendanceStates: Array,
   },
-  components: { AttendanceRow },
+  components: { AttendanceCard },
   name: "attendance-table-daily",
   data() {
-    return {
-      loading: false,
-      attendance_states: [
-        { icon: "fa-check-circle", value: "P", color: "green" },
-        { icon: "fa-times-circle", value: "A", color: "red" },
-        { icon: "fa-minus-circle", value: "L", color: "orange" },
-      ],
-      records: [],
-    };
-  },
-  created() {
-    this.fetch_attendance_records();
-  },
-  watch: {
-    clazz() {
-      this.fetch_attendance_records();
-    },
-  },
-  methods: {
-    fetch_attendance_records() {
-      if (!this.clazz.id) return;
-      this.loading = true;
-      return classroom_service
-        .get({}, `${this.clazz.id}/attendance_by_student`)
-        .then((res) => {
-          this.records.splice(0, this.records.length);
-          res.forEach((record) => {
-            this.records.push(record);
-          });
-          this.loading = false;
-          return Promise.resolve();
-        })
-        .catch((error) => {
-          console.log(error);
-          this.loading = false;
-          return Promise.reject();
-        });
-    },
-    getDaysArray() {
-      var today = moment();
-      var firstOfMonth = moment(today.format("YYYY-MM-01"));
-      var currDate = moment(this.date);
-      var monthIndex = currDate.month(); // 0..11 instead of 1..12
-      // today for current month, 1st for any other month
-      var endDateIndex = currDate.isSameOrAfter(firstOfMonth)
-        ? today.date()
-        : 32;
-      var date = new Date(currDate.year(), monthIndex, 1);
-      var result = [];
-      while (date.getMonth() == monthIndex && date.getDate() <= endDateIndex) {
-        result.push({
-          date: date.getDate(),
-          day: this.constants.DAYS[date.getDay()],
-          colspan:
-            moment(date).format("YYYY-MM-DD") == this.date
-              ? this.attendance_states.length
-              : 1,
-        });
-        date.setDate(date.getDate() + 1);
-      }
-      return result.reverse();
-    },
+    return {};
   },
   computed: {
+    ...mapGetters("attendance", {
+      records: "attendances",
+      loading: "loading",
+    }),
     sub_header_colspan() {
       //  name and id of students are 2 fixed columns
       var first_fixed_cols = 2;
@@ -133,14 +51,28 @@ export default {
         {
           date: currDate.date(),
           day: this.constants.DAYS[currDate.day()],
-          colspan: this.attendance_states.length,
+          colspan: this.attendanceStates.length,
         },
       ];
       return headers;
     },
     today() {
-      var today = moment(this.date);
-      return today.date() + this.constants.DAYS[today.day()];
+      var currDate = moment(this.date);
+      return currDate.date() + this.constants.DAYS[currDate.day()];
+    },
+  },
+  created() {
+    this.fetch_attendance_records();
+  },
+  watch: {
+    clazz() {
+      this.fetch_attendance_records();
+    },
+  },
+  methods: {
+    fetch_attendance_records() {
+      if (!this.clazz.id) return;
+      this.$store.dispatch(ATTENDANCE_REQUEST, this.clazz.id);
     },
   },
 };

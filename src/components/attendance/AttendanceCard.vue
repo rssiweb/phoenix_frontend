@@ -1,23 +1,17 @@
 <template>
-  <tr>
-    <td>{{ studentId }}</td>
-    <td>
-      {{ studentName }}
-    </td>
-
-    <template v-for="header in headers">
-      <template v-if="header.date != current_date">
-        <td class="text-center pa-0" :key="header.date">
-          <span>{{ concat(data[header.date]) }}</span>
-        </td>
-      </template>
-      <template v-else>
-        <td
-          class="text-center"
-          v-for="state in states"
-          :key="header.date + '-' + state.value"
-        >
-          <div class="ma-1">
+  <v-list-item class="pa-1">
+    <v-list-item-content>
+      <v-list-item-title class="text-start">{{
+        studentName || "Unknown"
+      }}</v-list-item-title>
+      <v-list-item-subtitle class="text-start">{{
+        studentId
+      }}</v-list-item-subtitle>
+    </v-list-item-content>
+    <v-list-item-action>
+      <v-row>
+        <v-col v-for="state in states" :key="state.value">
+          <v-btn icon>
             <v-icon
               :disabled="updating"
               :color="colored_state[state.value]"
@@ -26,19 +20,16 @@
               {{ state.icon }}
               fa-check-circle
             </v-icon>
-          </div>
-        </td>
-      </template>
-    </template>
-  </tr>
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-list-item-action>
+  </v-list-item>
 </template>
 
 <script>
 import moment from "moment";
-// import { attendance_service } from "@/services";
-// import Vue from "vue";
 import { ATTENDANCE_REGISTER, CLASSOCCURRENCE_CREATE } from "@/store/actions";
-import { mapGetters } from "vuex";
 export default {
   name: "attendance-row",
   props: {
@@ -53,7 +44,7 @@ export default {
   },
   data() {
     return {
-      // attendances: this.initAttendances || [],
+      updating: false,
       attendance: "",
       attendance_id: null,
     };
@@ -69,9 +60,7 @@ export default {
       this.set_current_attendance();
     },
   },
-
   computed: {
-    ...mapGetters("attendance", { updating: "loading" }),
     data() {
       var tmp = {};
       this.attendances.forEach((record) => {
@@ -112,14 +101,23 @@ export default {
   },
   methods: {
     set_current_attendance() {
+      console.log("");
       this.attendance = null;
       this.attendance_id = null;
+      console.log("started for", this.attendances.length);
       this.attendances.forEach((record) => {
         var record_date = moment(record.date);
         if (
           this.occurrence &&
           moment(this.occurrence.start_time).isSame(record_date)
         ) {
+          console.log(
+            "setting attendance",
+            this.occurrence,
+            record.date,
+            record.attendance,
+            record.id
+          );
           this.attendance = record.attendance;
           this.attendance_id = record.id;
         }
@@ -136,6 +134,7 @@ export default {
       return color;
     },
     register_attendance(attendance) {
+      this.updating = true;
       this.$store
         .dispatch(ATTENDANCE_REGISTER, {
           faculty: this.me.username,
@@ -145,8 +144,12 @@ export default {
           attendance_id: this.attendance_id,
         })
         .then((res) => {
+          this.updating = false;
           this.attendance_id = res.id;
           this.attendance = res.attendance;
+        })
+        .catch(() => {
+          this.updating = false;
         });
     },
     trigger_attendance(attendance) {
@@ -169,10 +172,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.input {
-  /* border: 1px solid black; */
-  text-align: center;
-}
-</style>

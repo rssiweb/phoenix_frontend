@@ -25,8 +25,7 @@
         </div>
       </v-row>
 
-      <v-row class="mt-2">
-        <v-spacer></v-spacer>
+      <v-row class="mx-2" v-if="message.error || message.info">
         <p class="error--text">
           <v-icon small>mdi-error</v-icon>
           {{ message.error }}
@@ -36,13 +35,12 @@
           <v-icon small>mdi-info</v-icon>
           {{ message.info }}
         </p>
-        <v-spacer></v-spacer>
       </v-row>
     </v-container>
     <v-row>
       <v-col class="text-center">
         <template v-if="!selected_class">
-          <div class="text-h5">Select a class</div>
+          <div class="text-body1">Select a class</div>
         </template>
         <template v-else>
           <div class="d-none d-md-block">
@@ -50,6 +48,7 @@
               :date="selected_date"
               :clazz="selected_class"
               :occurrence="selected_occurrence"
+              :attendance-states="attendance_states"
             />
           </div>
           <div class="d-md-none">
@@ -57,6 +56,7 @@
               :date="selected_date"
               :clazz="selected_class"
               :occurrence="selected_occurrence"
+              :attendance-states="attendance_states"
             />
           </div>
         </template>
@@ -101,6 +101,16 @@ export default {
   },
   data() {
     return {
+      attendance_states: [
+        {
+          icon: "fa-check-circle",
+          value: "P",
+          desc: "Present",
+          color: "green",
+        },
+        { icon: "fa-times-circle", value: "A", desc: "Absent", color: "red" },
+        { icon: "fa-minus-circle", value: "L", desc: "Leave", color: "orange" },
+      ],
       message: {
         info: "",
         error: "",

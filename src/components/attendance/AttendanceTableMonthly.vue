@@ -20,7 +20,7 @@
         <th :colspan="sub_header_colspan"></th>
         <th
           class="text-center"
-          v-for="state in attendance_states"
+          v-for="state in attendanceStates"
           :key="state.value"
         >
           {{ state.value }}
@@ -30,11 +30,11 @@
     </thead>
     <tbody v-if="records.length">
       <attendance-row
-        :states="attendance_states"
+        :states="attendanceStates"
         :headers="headers"
-        :init-attendances="record.attendance"
+        :attendances="record.attendance"
         v-for="record in records"
-        :key="record.id"
+        :key="clazz.id + '-' + record.id"
         :date="date"
         :clazz="clazz"
         :occurrence="occurrence"
@@ -48,7 +48,6 @@
 <script>
 import moment from "moment";
 import AttendanceRow from "./AttendanceRow.vue";
-import { classroom_service } from "@/services";
 import { ATTENDANCE_REQUEST } from "@/store/actions";
 import { mapGetters } from "vuex";
 export default {
@@ -56,23 +55,17 @@ export default {
     date: String,
     clazz: Object,
     occurrence: Object,
+    attendanceStates: Array,
   },
   components: { AttendanceRow },
   name: "attendance-table-monthly",
   data() {
-    return {
-      loading: false,
-      attendance_states: [
-        { icon: "fa-check-circle", value: "P", color: "green" },
-        { icon: "fa-times-circle", value: "A", color: "red" },
-        { icon: "fa-minus-circle", value: "L", color: "orange" },
-      ],
-      records: [],
-    };
+    return {};
   },
   computed: {
     ...mapGetters("attendance", {
       records: "attendances",
+      loading: "loading",
     }),
     sub_header_colspan() {
       //  name and id of students are 2 fixed columns
@@ -80,57 +73,38 @@ export default {
       if (!this.date) return first_fixed_cols;
       var today = moment();
       var first_of_this_month = moment(today.format("YYYY-MM-01"));
-      var attendance_day = moment(this.date);
-      var same_month = attendance_day.isSameOrAfter(first_of_this_month);
+      var currDate = moment(this.date);
+      var same_month = currDate.isSameOrAfter(first_of_this_month);
       var end_date = today;
       if (!same_month) {
         var first_of_next_month = moment(
-          new Date(attendance_day.year(), attendance_day.month() + 1, 1)
+          new Date(currDate.year(), currDate.month() + 1, 1)
         );
         end_date = first_of_next_month.subtract(1, "days");
       }
-      return first_fixed_cols + end_date.diff(attendance_day, "days");
+      return first_fixed_cols + end_date.diff(currDate, "days");
     },
     headers() {
       var headers = this.getDaysArray();
       return headers;
     },
     today() {
-      var today = moment(this.date);
-      return today.date() + this.constants.DAYS[today.day()];
+      var currDate = moment(this.date);
+      return currDate.date() + this.constants.DAYS[currDate.day()];
     },
   },
   created() {
     this.fetch_attendance_records();
   },
-
   watch: {
     clazz() {
       this.fetch_attendance_records();
     },
   },
-
   methods: {
     fetch_attendance_records() {
       if (!this.clazz.id) return;
       this.$store.dispatch(ATTENDANCE_REQUEST, this.clazz.id);
-      
-      this.loading = true;
-      return classroom_service
-        .get({}, `${this.clazz.id}/attendance_by_student`)
-        .then((res) => {
-          this.records.splice(0, this.records.length);
-          res.forEach((record) => {
-            this.records.push(record);
-          });
-          this.loading = false;
-          return Promise.resolve();
-        })
-        .catch((error) => {
-          console.log(error);
-          this.loading = false;
-          return Promise.reject();
-        });
     },
     getDaysArray() {
       var today = moment();
@@ -149,7 +123,7 @@ export default {
           day: this.constants.DAYS[date.getDay()],
           colspan:
             moment(date).format("YYYY-MM-DD") == this.date
-              ? this.attendance_states.length
+              ? this.attendanceStates.length
               : 1,
         });
         date.setDate(date.getDate() + 1);

@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-col cols="12" lg="2" md="3">
+    <v-col cols="6" lg="2" md="3">
       <v-select
         :items="sessions"
         label="Session"
@@ -11,7 +11,7 @@
         dense
       ></v-select>
     </v-col>
-    <v-col cols="12" lg="2" md="3">
+    <v-col cols="6" lg="2" md="3">
       <v-select
         :items="branches"
         label="Branch"
@@ -22,7 +22,7 @@
         dense
       ></v-select>
     </v-col>
-    <v-col cols="12" lg="2" md="3">
+    <v-col cols="6" lg="2" md="3">
       <v-select
         :items="classes"
         label="Class"
@@ -34,7 +34,7 @@
       ></v-select>
     </v-col>
 
-    <v-col cols="12" offset-lg="4" lg="2" md="3">
+    <v-col cols="6" offset-lg="4" lg="2" md="3">
       <v-dialog
         ref="dialog"
         v-model="show_date_modal"
@@ -90,8 +90,10 @@ export default {
       selected_class: null,
     };
   },
+
   watch: {
     selected_session() {
+      this.$store.dispatch;
       this.fetch_classes();
     },
     selected_branch() {
@@ -121,7 +123,6 @@ export default {
         .then((values) => {
           this.branches = values[0].results;
           this.sessions = values[1].results;
-
           this.loading = false;
         })
         .catch(() => {

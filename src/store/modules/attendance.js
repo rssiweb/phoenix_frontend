@@ -1,15 +1,20 @@
-import { REGISTER_, SUCCESS_, ERROR_, REQUEST_ } from "@/store/actions";
+import { REGISTER_, ERROR_, REQUEST_ } from "@/store/actions";
 import { attendance_service, classroom_service } from "@/services";
 // private actions
 const ATTENDANCES_LOADED = "ATTENDANCES_LOADED";
+const NEW = "NEW";
+const UPDATE = "UPDATE";
+
 const state = {
+  session: "",
   loading: false,
   success: null,
   attendances: JSON.parse(localStorage.getItem("attendances") || "[]"),
 };
 
 const getters = {
-  attendance: (state) => state.attendance,
+  attendances: (state) => state.attendances,
+  loading: (state) => state.loading,
 };
 
 const actions = {
@@ -35,13 +40,21 @@ const actions = {
       var method = "post";
       if (payload.attendance_id) {
         method = "patch";
-        args.push(this.attendance_id);
-        delete payload["attendance_id"];
+        args.push(payload.attendance_id);
+        // delete payload["attendance_id"];
       }
       attendance_service[method](...args)
         .then((res) => {
           // dispatch() and event to add this attendance to list of attendance we have
-          commit(SUCCESS_, res);
+          if (method === "post") commit(NEW, res);
+          else
+            commit(
+              UPDATE,
+              Object.assign({}, res, {
+                id: payload.attendance_id,
+                student: payload.student,
+              })
+            );
           resolve(res);
         })
         .catch((err) => {
@@ -60,15 +73,52 @@ const mutations = {
     state.loading = true;
   },
   [ATTENDANCES_LOADED]: (state, attendances) => {
-    state.attendances.splice(0, state.attendances);
+    state.attendances.splice(0, state.attendances.length);
     attendances.forEach((item) => {
       state.attendances.push(item);
     });
     state.loading = false;
     state.success = true;
   },
-  [SUCCESS_]: (state, res) => {
-    state.attendances.push(res);
+  [NEW]: (state, res) => {
+    console.log("insert");
+    // we need to know if its a new attendance record or and update
+
+    // res is an attendance entry
+    // state.attendances is the list of students
+    state.attendances.forEach((student) => {
+      console.log(res, res.student, student.id);
+      if (res.student === student.id) {
+        student.attendance.push({
+          attendance: res.attendance,
+          comment: res.comment,
+          date: res.date,
+          id: res.id,
+        });
+        console.log("added");
+      }
+    });
+    state.loading = false;
+    state.success = true;
+  },
+  [UPDATE]: (state, res) => {
+    console.log("update");
+    // we need to know if its a new attendance record or and update
+
+    // res is an attendance entry
+    // state.attendances is the list of students
+    state.attendances.forEach((student) => {
+      console.log(res, res.student, student.id);
+      if (res.student === student.id) {
+        student.attendance.forEach((record) => {
+          if (record.id == res.id) {
+            record.attendance = res.attendance;
+            record.comment = res.comment;
+            console.log("udpated");
+          }
+        });
+      }
+    });
     state.loading = false;
     state.success = true;
   },
