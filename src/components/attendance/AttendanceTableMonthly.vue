@@ -97,7 +97,7 @@ export default {
     this.fetch_attendance_records();
   },
   watch: {
-    clazz() {
+    occurrence() {
       this.fetch_attendance_records();
     },
   },

@@ -56,22 +56,19 @@ export default {
       // attendances: this.initAttendances || [],
       attendance: "",
       attendance_id: null,
+      updating: false,
     };
   },
   created() {
     this.set_current_attendance();
   },
   watch: {
-    date() {
-      this.set_current_attendance();
-    },
     occurrence() {
       this.set_current_attendance();
     },
   },
 
   computed: {
-    ...mapGetters("attendance", { updating: "loading" }),
     data() {
       var tmp = {};
       this.attendances.forEach((record) => {
@@ -136,6 +133,7 @@ export default {
       return color;
     },
     register_attendance(attendance) {
+      this.updating = true;
       this.$store
         .dispatch(ATTENDANCE_REGISTER, {
           faculty: this.me.username,
@@ -145,12 +143,17 @@ export default {
           attendance_id: this.attendance_id,
         })
         .then((res) => {
+          this.updating = false;
           this.attendance_id = res.id;
           this.attendance = res.attendance;
+        })
+        .catch(() => {
+          this.updating = false;
         });
     },
     trigger_attendance(attendance) {
       if (!this.occurrence) {
+        this.updating = true;
         var vm = this;
         this.$store
           .dispatch(CLASSOCCURRENCE_CREATE, {
@@ -159,8 +162,11 @@ export default {
             start_time: moment(this.date).format(),
           })
           .then(() => {
-            console.log(this.occurrence, "afterwords");
+            this.updating = false;
             vm.register_attendance(attendance);
+          })
+          .catch(() => {
+            this.updating = false;
           });
       } else {
         this.register_attendance(attendance);

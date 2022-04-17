@@ -53,9 +53,6 @@ export default {
     this.set_current_attendance();
   },
   watch: {
-    date() {
-      this.set_current_attendance();
-    },
     occurrence() {
       this.set_current_attendance();
     },
@@ -101,23 +98,14 @@ export default {
   },
   methods: {
     set_current_attendance() {
-      console.log("");
       this.attendance = null;
       this.attendance_id = null;
-      console.log("started for", this.attendances.length);
       this.attendances.forEach((record) => {
         var record_date = moment(record.date);
         if (
           this.occurrence &&
           moment(this.occurrence.start_time).isSame(record_date)
         ) {
-          console.log(
-            "setting attendance",
-            this.occurrence,
-            record.date,
-            record.attendance,
-            record.id
-          );
           this.attendance = record.attendance;
           this.attendance_id = record.id;
         }
@@ -162,7 +150,6 @@ export default {
             start_time: moment(this.date).format(),
           })
           .then(() => {
-            console.log(this.occurrence, "afterwords");
             vm.register_attendance(attendance);
           });
       } else {
