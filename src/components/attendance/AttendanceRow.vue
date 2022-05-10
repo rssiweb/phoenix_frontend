@@ -35,10 +35,7 @@
 
 <script>
 import moment from "moment";
-// import { attendance_service } from "@/services";
-// import Vue from "vue";
 import { ATTENDANCE_REGISTER, CLASSOCCURRENCE_CREATE } from "@/store/actions";
-import { mapGetters } from "vuex";
 export default {
   name: "attendance-row",
   props: {
@@ -53,7 +50,6 @@ export default {
   },
   data() {
     return {
-      // attendances: this.initAttendances || [],
       attendance: "",
       attendance_id: null,
       updating: false,
@@ -175,10 +171,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.input {
-  /* border: 1px solid black; */
-  text-align: center;
-}
-</style>

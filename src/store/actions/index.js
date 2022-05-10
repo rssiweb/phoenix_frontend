@@ -9,6 +9,7 @@ export const CREATE_ = "CREATE";
 export const DELETE_ = "DELETE";
 export const REGISTER_ = "REGISTER";
 export const VISIBLE_ = "VISIBLE";
+export const ATTENDANCE_ = "ATTENDANCE";
 
 // PUBLIC ACTIONS
 export const AUTH_REQUEST = `auth/${REQUEST_}`;
@@ -28,6 +29,9 @@ export const CLASSOCCURRENCE_CREATE = `classoccurrence/${CREATE_}`;
 // attendance
 export const ATTENDANCE_REGISTER = `attendance/${REGISTER_}`;
 export const ATTENDANCE_REQUEST = `attendance/${REQUEST_}`;
+
+// report
+export const REPORT_ATTENDANCE = `report/${ATTENDANCE_}`;
 
 // menu
 export const MENU_VISIBLE = `menu/${VISIBLE_}`;

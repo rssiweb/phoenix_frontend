@@ -4,6 +4,7 @@ import user from "./modules/user";
 import auth from "./modules/auth";
 import classoccurrence from "./modules/classoccurrence";
 import attendance from "./modules/attendance";
+import report from "./modules/report";
 import menu from "./modules/menu";
 import global from "./modules/global";
 Vue.use(Vuex);
@@ -18,6 +19,7 @@ export default new Vuex.Store({
     attendance,
     menu,
     global,
+    report,
   },
   strict: debug,
 });

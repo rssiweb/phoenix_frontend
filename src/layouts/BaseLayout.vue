@@ -19,19 +19,40 @@
       :touchless="!isAuthenticated"
     >
       <v-list nav>
-        <v-list-item-group v-model="group" active-class="primary--text">
-          <v-list-item
-            v-for="item in menu_items"
-            :key="item.name"
-            :to="{ name: item.route }"
-            :disabled="item.disable"
-          >
-            <v-list-item-icon>
-              <v-icon small>{{ item.icon }}</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>{{ item.name }}</v-list-item-title>
-          </v-list-item>
-        </v-list-item-group>
+        <template v-for="item in menu_items">
+          <template v-if="item.route">
+            <v-list-item
+              :key="item.name"
+              :to="{ name: item.route }"
+              :disabled="item.disable"
+            >
+              <v-list-item-icon>
+                <v-icon small>{{ item.icon }}</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>{{ item.name }}</v-list-item-title>
+            </v-list-item>
+          </template>
+          <template v-else-if="item.menu.length > 0">
+            <v-list-group :key="item.name" :disabled="item.disable" no-action>
+              <template v-slot:activator>
+                <v-list-item-icon>
+                  <v-icon small>{{ item.icon }}</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>{{ item.name }}</v-list-item-title>
+              </template>
+              <v-list-item
+                v-for="subitem in item.menu"
+                :key="item.name + subitem.name"
+                :to="{ name: subitem.route }"
+              >
+                <v-list-item-icon>
+                  <v-icon small>{{ subitem.icon }}</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>{{ subitem.name }}</v-list-item-title>
+              </v-list-item>
+            </v-list-group>
+          </template>
+        </template>
       </v-list>
     </v-navigation-drawer>
     <v-main>
@@ -79,23 +100,24 @@ export default {
           disable: true,
         },
         {
-          route: "reports",
           name: "Reports",
           icon: "fa-chart-column",
-          disable: true,
+          disable: false,
+          menu: [
+            {
+              route: "time-sheet",
+              name: "Time Sheet",
+              icon: "fa-chart-column",
+              disable: false,
+            },
+          ],
         },
       ],
-      group: null,
       drawer: false,
     };
   },
   computed: {
     ...mapGetters("auth", ["isAuthenticated"]),
-  },
-  watch: {
-    group() {
-      this.drawer = false;
-    },
   },
   methods: {
     logout() {
